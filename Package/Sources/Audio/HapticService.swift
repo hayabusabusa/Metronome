@@ -7,4 +7,6 @@
 
 import Foundation
 
-public final class HapticService {}
+public final class HapticService {
+    
+}

@@ -20,7 +20,10 @@ let package = Package(
             ]),
         .target(
             name: "Audio",
-            dependencies: []),
+            dependencies: [],
+            resources: [
+                .copy("Resource/click.mp3")
+            ]),
         .testTarget(
             name: "PackageTests",
             dependencies: [
