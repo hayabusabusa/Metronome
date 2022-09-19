@@ -8,16 +8,23 @@ let package = Package(
     platforms: [.iOS(.v14)],
     products: [
         .library(
-            name: "Package",
-            targets: ["Package"]),
+            name: "AppFeature",
+            targets: ["AppFeature"]),
     ],
     dependencies: [],
     targets: [
         .target(
-            name: "Package",
+            name: "AppFeature",
+            dependencies: [
+                "Audio"
+            ]),
+        .target(
+            name: "Audio",
             dependencies: []),
         .testTarget(
             name: "PackageTests",
-            dependencies: ["Package"]),
+            dependencies: [
+                "AppFeature"
+            ]),
     ]
 )
