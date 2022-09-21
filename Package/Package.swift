@@ -16,7 +16,7 @@ let package = Package(
         .target(
             name: "AppFeature",
             dependencies: [
-                "Audio"
+                "MetronomeFeature"
             ]),
         .target(
             name: "Audio",
@@ -24,6 +24,12 @@ let package = Package(
             resources: [
                 .copy("Resource/click.mp3")
             ]),
+        .target(
+            name: "MetronomeFeature",
+            dependencies: [
+                "Audio"
+            ]
+        ),
         .testTarget(
             name: "PackageTests",
             dependencies: [
