@@ -8,7 +8,7 @@
 import Foundation
 
 public enum AudioFileService {
-    public enum Resource: String {
+    public enum Resource: String, CaseIterable {
         case click = "click"
 
         var type: String {

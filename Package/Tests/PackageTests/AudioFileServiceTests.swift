@@ -20,5 +20,10 @@ final class AudioFileServiceTests: XCTestCase {
             let url = AudioFileService.resource(for: "test", of: "mp3")
             XCTAssertNil(url)
         }
+
+        XCTContext.runActivity(named: "モジュールに追加したリソースを全て読み込めること") { _ in
+            let resources = AudioFileService.Resource.allCases.map { AudioFileService.resource(for: $0) }
+            XCTAssertFalse(resources.contains(nil))
+        }
     }
 }
