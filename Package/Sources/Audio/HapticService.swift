@@ -10,14 +10,12 @@ import CoreHaptics
 import Foundation
 
 public final class HapticService {
-    private let bpm: CGFloat = 120.0
+    private let beatService: BeatServiceProtocol = BeatService(bpm: 120)
     private let audioSession: AVAudioSession
     private let hapticEngine: CHHapticEngine
     private var player: CHHapticAdvancedPatternPlayer?
-
-    private var audioDuration: TimeInterval {
-        TimeInterval(60.0 / bpm)
-    }
+    
+    private(set) public var isPlaying = false
 
     public init() throws {
         do {
@@ -39,43 +37,35 @@ public final class HapticService {
     }
 
     public func play() throws {
-        guard let url = AudioFileService.resource(for: .click) else { return }
-
         do {
-            let audioResourceID = try hapticEngine.registerAudioResource(url)
-            let hapticEvents = [
-                CHHapticEvent(audioResourceID: audioResourceID,
-                              parameters: [
-                                .init(parameterID: .audioVolume, value: 1.0),
-                              ],
-                              relativeTime: 0,
-                              duration: audioDuration),
-                CHHapticEvent(eventType: .hapticTransient,
-                              parameters: [
-                                .init(parameterID: .hapticSharpness, value: 0.4),
-                                .init(parameterID: .hapticIntensity, value: 1.0)
-                              ],
-                              relativeTime: 0),
-                CHHapticEvent(eventType: .hapticContinuous,
-                              parameters: [
-                                .init(parameterID: .hapticSharpness, value: 0.4),
-                                .init(parameterID: .hapticIntensity, value: 1.0)
-                              ],
-                              relativeTime: 0,
-                              duration: 0.08)
-            ]
-            let pattern = try CHHapticPattern(events: hapticEvents, parameters: [])
+            if player == nil {
+                guard let url = AudioFileService.resource(for: .click) else { return }
 
-            player = try hapticEngine.makeAdvancedPlayer(with: pattern)
-            player?.loopEnabled = true
+                let audioResourceID = try hapticEngine.registerAudioResource(url)
+                let hapticEvents = [
+                    CHHapticEvent(audioResourceID: audioResourceID,
+                                  parameters: [
+                                    .init(parameterID: .audioVolume, value: 1.0),
+                                  ],
+                                  relativeTime: 0,
+                                  duration: beatService.intervalForBPM),
+                ]
+                let pattern = try CHHapticPattern(events: hapticEvents, parameters: [])
+
+                player = try hapticEngine.makeAdvancedPlayer(with: pattern)
+                player?.loopEnabled = true
+            }
 
             try player?.start(atTime: CHHapticTimeImmediate)
+
+            isPlaying = true
         } catch {
             throw error
         }
     }
 
     public func stop() {
-        hapticEngine.stop(completionHandler: nil)
+        try? player?.stop(atTime: CHHapticTimeImmediate)
+        isPlaying = false
     }
 }
