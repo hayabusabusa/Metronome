@@ -5,6 +5,7 @@
 //  Created by Shunya Yamada on 2022/09/22.
 //
 
+import Audio
 import UIKit
 
 public final class MetronomeViewController: UIViewController {
@@ -22,8 +23,25 @@ public final class MetronomeViewController: UIViewController {
     private lazy var button: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("START", for: .normal)
+        button.setTitle("TAP", for: .normal)
+        button.addAction(buttonAction, for: .touchUpInside)
         return button
+    }()
+
+    private lazy var buttonAction: UIAction = {
+        UIAction { [weak self] _ in
+            if self?.hapticService?.isPlaying == false {
+                try? self?.hapticService?.play()
+            } else {
+                self?.hapticService?.stop()
+            }
+        }
+    }()
+
+    // MARK: Properties
+
+    private lazy var hapticService: HapticService? = {
+        try? HapticService()
     }()
 
     // MARK: Lifecycle
