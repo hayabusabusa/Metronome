@@ -20,7 +20,7 @@ public final class MetronomeViewController: UIViewController {
     }()
 
     private lazy var button: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("START", for: .normal)
         return button
