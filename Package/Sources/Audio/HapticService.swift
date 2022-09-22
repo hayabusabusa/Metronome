@@ -10,11 +10,11 @@ import CoreHaptics
 import Foundation
 
 public final class HapticService {
-    private let beatService: BeatServiceProtocol = BeatService(bpm: 120)
     private let audioSession: AVAudioSession
     private let hapticEngine: CHHapticEngine
     private var player: CHHapticAdvancedPatternPlayer?
-    
+
+    public let beats: BeatServiceProtocol = BeatService(bpm: 120)
     private(set) public var isPlaying = false
 
     public init() throws {
@@ -48,7 +48,7 @@ public final class HapticService {
                                     .init(parameterID: .audioVolume, value: 1.0),
                                   ],
                                   relativeTime: 0,
-                                  duration: beatService.intervalForBPM),
+                                  duration: beats.intervalForBPM),
                 ]
                 let pattern = try CHHapticPattern(events: hapticEvents, parameters: [])
 
