@@ -5,6 +5,7 @@
 //  Created by Shunya Yamada on 2022/09/22.
 //
 
+import Audio
 import SwiftUI
 import MetronomeFeature
 
@@ -13,7 +14,8 @@ private extension MetronomeViewController {
         typealias UIViewControllerType = MetronomeViewController
 
         func makeUIViewController(context: Context) -> MetronomeViewController {
-            let vc = MetronomeViewController()
+            let viewModel = MetronomeViewModel(hapticService: try? HapticService())
+            let vc = MetronomeViewController(viewModel: viewModel)
             return vc
         }
 
