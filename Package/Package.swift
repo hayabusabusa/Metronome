@@ -9,15 +9,32 @@ let package = Package(
     products: [
         .library(
             name: "AppFeature",
-            targets: ["AppFeature"]),
+            targets: [
+                "AppFeature"
+            ]),
+        .library(
+            name: "Preview",
+            targets: [
+                "Preview"
+            ]),
     ],
     dependencies: [],
     targets: [
+        // MARK: Feature modules
+
         .target(
             name: "AppFeature",
             dependencies: [
                 "MetronomeFeature"
             ]),
+        .target(
+            name: "MetronomeFeature",
+            dependencies: [
+                "Audio"
+            ]),
+
+        // MARK: Internal modules
+
         .target(
             name: "Audio",
             dependencies: [],
@@ -25,11 +42,13 @@ let package = Package(
                 .copy("Resource/click.mp3")
             ]),
         .target(
-            name: "MetronomeFeature",
+            name: "Preview",
             dependencies: [
-                "Audio"
-            ]
-        ),
+                "MetronomeFeature"
+            ]),
+
+        // MARK: Tests
+
         .testTarget(
             name: "PackageTests",
             dependencies: [
