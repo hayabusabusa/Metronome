@@ -6,49 +6,91 @@
 //
 
 import Audio
+import Combine
 import UIKit
 
 public final class MetronomeViewController: UIViewController {
 
     // MARK: Subviews
 
+    private lazy var controlsStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 24
+        stackView.alignment = .center
+        stackView.distribution = .fill
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+
     private lazy var bpmLabel: UILabel = {
         let label = UILabel()
         label.text = "120"
-        label.font = .systemFont(ofSize: 64, weight: .medium)
+        label.font = .systemFont(ofSize: 40, weight: .medium)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
 
-    private lazy var button: UIButton = {
-        let button = UIButton(type: .system)
+    private lazy var buttonsStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 24
+        stackView.alignment = .center
+        stackView.distribution = .equalCentering
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+
+    private lazy var playButton: MetronomeControlButton = {
+        let button = MetronomeControlButton(frame: .zero)
+        button.tintColor = .label
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("TAP", for: .normal)
-        button.addAction(buttonAction, for: .touchUpInside)
+        button.addAction(playButtonAction, for: .touchUpInside)
         return button
     }()
 
-    private lazy var buttonAction: UIAction = {
+    private lazy var increaseButton: MetronomeControlButton = {
+        let button = MetronomeControlButton(size: .init(width: 56, height: 56))
+        button.tintColor = .label
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setIcon(UIImage(systemName: "plus.circle"))
+        return button
+    }()
+
+    private lazy var decreaseButton: MetronomeControlButton = {
+        let button = MetronomeControlButton(size: .init(width: 56, height: 56))
+        button.tintColor = .label
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setIcon(UIImage(systemName: "minus.circle"))
+        return button
+    }()
+
+    private lazy var playButtonAction: UIAction = {
         UIAction { [weak self] _ in
-            if self?.hapticService?.isPlaying == false {
-                try? self?.hapticService?.play()
-            } else {
-                self?.hapticService?.stop()
-            }
+            self?.viewModel.onPlayButtonPressed()
         }
     }()
 
     // MARK: Properties
 
-    private lazy var hapticService: HapticService? = {
-        try? HapticService()
-    }()
+    private let viewModel: MetronomeViewModel
+    private var subscriptions = Set<AnyCancellable>()
 
     // MARK: Lifecycle
+
+    public init(viewModel: MetronomeViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     public override func viewDidLoad() {
         super.viewDidLoad()
         configureSubviews()
+        configureSubscriptions()
     }
 }
 
@@ -57,14 +99,31 @@ public final class MetronomeViewController: UIViewController {
 private extension MetronomeViewController {
     func configureSubviews() {
         view.backgroundColor = .systemBackground
-        view.addSubview(bpmLabel)
-        view.addSubview(button)
+        view.addSubview(controlsStackView)
+
+        controlsStackView.addArrangedSubview(bpmLabel)
+        controlsStackView.addArrangedSubview(buttonsStackView)
+        buttonsStackView.addArrangedSubview(decreaseButton)
+        buttonsStackView.addArrangedSubview(playButton)
+        buttonsStackView.addArrangedSubview(increaseButton)
 
         NSLayoutConstraint.activate([
-            bpmLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 56),
-            bpmLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
-            button.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            controlsStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            controlsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
+            decreaseButton.heightAnchor.constraint(equalToConstant: decreaseButton.size.height),
+            decreaseButton.heightAnchor.constraint(equalToConstant: decreaseButton.size.width),
+            playButton.heightAnchor.constraint(equalToConstant: playButton.size.height),
+            playButton.widthAnchor.constraint(equalToConstant: playButton.size.width),
+            increaseButton.heightAnchor.constraint(equalToConstant: increaseButton.size.height),
+            increaseButton.widthAnchor.constraint(equalToConstant: increaseButton.size.width)
         ])
+    }
+
+    func configureSubscriptions() {
+        viewModel.$isPlaying
+            .sink { [weak self] value in
+                self?.playButton.setIcon(value ? UIImage(systemName: "pause.fill") : UIImage(systemName: "play.fill"))
+            }
+            .store(in: &subscriptions)
     }
 }
