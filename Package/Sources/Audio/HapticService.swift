@@ -8,6 +8,7 @@
 import AVFoundation
 import CoreHaptics
 import Foundation
+import UIKit
 
 public final class HapticService {
     private let audioSessionService = AudioSessionService.shared
@@ -30,6 +31,8 @@ public final class HapticService {
         }
         try hapticEngine.start()
         try configurePlayer()
+        
+        configureObserver()
     }
 
     public func play() throws {
@@ -72,5 +75,28 @@ private extension HapticService {
 
         player = try hapticEngine.makeAdvancedPlayer(with: pattern)
         player?.loopEnabled = true
+    }
+
+    func configureObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(willEnterForeground),
+                                               name: UIApplication.willEnterForegroundNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didEnterBackground),
+                                               name: UIApplication.didEnterBackgroundNotification,
+                                               object: nil)
+    }
+
+    @objc func willEnterForeground() {
+        try? hapticEngine.start()
+
+        if isPlaying {
+            try? player?.start(atTime: CHHapticTimeImmediate)
+        }
+    }
+
+    @objc func didEnterBackground() {
+        hapticEngine.stop()
     }
 }
