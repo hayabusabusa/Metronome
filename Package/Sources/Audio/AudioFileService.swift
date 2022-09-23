@@ -7,8 +7,23 @@
 
 import Foundation
 
-public enum AudioFileService {
-    public enum Resource: String, CaseIterable {
+public struct AudioFileService {
+    private let path: URL
+
+    public init(name: String = "jp.shunya.yamada.metronome.AudioFileService") {
+        guard let root = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("\(NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo: nil))")
+        }
+        path = root.appendingPathComponent(name, isDirectory: true)
+    }
+
+    public func fileURL(with name: String) -> URL {
+        path.appendingPathComponent(name)
+    }
+}
+
+public extension AudioFileService {
+    enum Resource: String, CaseIterable {
         case click = "click"
 
         var type: String {
@@ -19,12 +34,12 @@ public enum AudioFileService {
         }
     }
 
-    static public func resource(for name: String, of type: String) -> URL? {
+    static func resource(for name: String, of type: String) -> URL? {
         guard let path = Bundle.module.path(forResource: name, ofType: type) else { return nil }
         return URL(fileURLWithPath: path)
     }
 
-    static public func resource(for resource: Resource) -> URL? {
+    static func resource(for resource: Resource) -> URL? {
         return Self.resource(for: resource.rawValue, of: resource.type)
     }
 }
