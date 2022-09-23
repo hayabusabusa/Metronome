@@ -14,6 +14,7 @@ public final class MetronomeViewModel {
     private let hapticService: HapticService?
 
     @Published var error: Error?
+    @Published var bpm: Double = 120.0
     @Published var isPlaying = false
 
     public init(hapticService: HapticService?) {
@@ -30,7 +31,7 @@ public final class MetronomeViewModel {
 
         do {
             if isPlaying {
-                hapticService.stop()
+                try hapticService.stop()
             } else {
                 try hapticService.play()
             }
@@ -41,7 +42,29 @@ public final class MetronomeViewModel {
         isPlaying = hapticService.isPlaying
     }
 
-    func onIncreaseButtonPressed() {}
+    func onIncreaseButtonPressed() {
+        guard let hapticService = hapticService else { return }
 
-    func onDecreaseButtonPressed() {}
+        do {
+            let bpm = hapticService.beats.bpm + 1.0
+            self.bpm = bpm
+
+            try hapticService.change(bpm: bpm)
+        } catch {
+            self.error = error
+        }
+    }
+
+    func onDecreaseButtonPressed() {
+        guard let hapticService = hapticService else { return }
+
+        do {
+            let bpm = hapticService.beats.bpm - 1.0
+            self.bpm = bpm
+            
+            try hapticService.change(bpm: bpm)
+        } catch {
+            self.error = error
+        }
+    }
 }

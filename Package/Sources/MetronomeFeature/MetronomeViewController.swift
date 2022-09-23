@@ -127,6 +127,11 @@ private extension MetronomeViewController {
     }
 
     func configureSubscriptions() {
+        viewModel.$bpm
+            .receive(on: DispatchQueue.main)
+            .map { "\($0)" }
+            .assign(to: \.text, on: bpmLabel)
+            .store(in: &subscriptions)
         viewModel.$isPlaying
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
