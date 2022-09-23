@@ -26,4 +26,13 @@ final class AudioFileServiceTests: XCTestCase {
             XCTAssertFalse(resources.contains(nil))
         }
     }
+
+    func test_ファイル操作の確認() {
+        let fileService = AudioFileService(name: "test")
+
+        XCTContext.runActivity(named: "ファイル名付きのパスを正しく返すこと") { _ in
+            let expected = "test/test.txt"
+            XCTAssertTrue(fileService.fileURL(with: "test.txt").absoluteString.contains(expected))
+        }
+    }
 }

@@ -20,6 +20,12 @@ public struct AudioFileService {
     public func fileURL(with name: String) -> URL {
         path.appendingPathComponent(name)
     }
+
+    public func removeFile(for name: String) {
+        let url = fileURL(with: name)
+        guard FileManager.default.fileExists(atPath: url.path) else { return }
+        try? FileManager.default.removeItem(at: url)
+    }
 }
 
 public extension AudioFileService {
