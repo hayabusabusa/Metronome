@@ -26,9 +26,7 @@ public final class MetronomeViewModel {
     }
 
     func onPlayButtonPressed() {
-        guard let hapticService = hapticService else {
-            return
-        }
+        guard let hapticService = hapticService else { return }
 
         do {
             if isPlaying {
@@ -42,4 +40,8 @@ public final class MetronomeViewModel {
 
         isPlaying = hapticService.isPlaying
     }
+
+    func onIncreaseButtonPressed() {}
+
+    func onDecreaseButtonPressed() {}
 }

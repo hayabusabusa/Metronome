@@ -17,7 +17,7 @@ public final class MetronomeViewController: UIViewController {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 24
-        stackView.alignment = .center
+        stackView.alignment = .fill
         stackView.distribution = .fill
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
@@ -26,6 +26,7 @@ public final class MetronomeViewController: UIViewController {
     private lazy var bpmLabel: UILabel = {
         let label = UILabel()
         label.text = "120"
+        label.textAlignment = .center
         label.font = .systemFont(ofSize: 40, weight: .medium)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -36,39 +37,44 @@ public final class MetronomeViewController: UIViewController {
         stackView.axis = .horizontal
         stackView.spacing = 24
         stackView.alignment = .center
-        stackView.distribution = .equalCentering
+        stackView.distribution = .equalSpacing
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
 
     private lazy var playButton: MetronomeControlButton = {
         let button = MetronomeControlButton(frame: .zero)
+        let action = UIAction { [weak self] _ in
+            self?.viewModel.onPlayButtonPressed()
+        }
         button.tintColor = .label
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addAction(playButtonAction, for: .touchUpInside)
+        button.addAction(action, for: .touchUpInside)
         return button
     }()
 
     private lazy var increaseButton: MetronomeControlButton = {
         let button = MetronomeControlButton(size: .init(width: 56, height: 56))
+        let action = UIAction { [weak self] _ in
+            self?.viewModel.onIncreaseButtonPressed()
+        }
         button.tintColor = .label
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setIcon(UIImage(systemName: "plus.circle"))
+        button.addAction(action, for: .touchUpInside)
         return button
     }()
 
     private lazy var decreaseButton: MetronomeControlButton = {
         let button = MetronomeControlButton(size: .init(width: 56, height: 56))
+        let action = UIAction { [weak self] _ in
+            self?.viewModel.onDecreaseButtonPressed()
+        }
         button.tintColor = .label
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setIcon(UIImage(systemName: "minus.circle"))
+        button.addAction(action, for: .touchUpInside)
         return button
-    }()
-
-    private lazy var playButtonAction: UIAction = {
-        UIAction { [weak self] _ in
-            self?.viewModel.onPlayButtonPressed()
-        }
     }()
 
     // MARK: Properties
@@ -114,6 +120,7 @@ private extension MetronomeViewController {
             decreaseButton.heightAnchor.constraint(equalToConstant: decreaseButton.size.width),
             playButton.heightAnchor.constraint(equalToConstant: playButton.size.height),
             playButton.widthAnchor.constraint(equalToConstant: playButton.size.width),
+            playButton.centerXAnchor.constraint(equalTo: buttonsStackView.centerXAnchor),
             increaseButton.heightAnchor.constraint(equalToConstant: increaseButton.size.height),
             increaseButton.widthAnchor.constraint(equalToConstant: increaseButton.size.width)
         ])
@@ -121,6 +128,7 @@ private extension MetronomeViewController {
 
     func configureSubscriptions() {
         viewModel.$isPlaying
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 self?.playButton.setIcon(value ? UIImage(systemName: "pause.fill") : UIImage(systemName: "play.fill"))
             }
