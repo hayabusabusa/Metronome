@@ -25,18 +25,19 @@ let package = Package(
         .target(
             name: "AppFeature",
             dependencies: [
-                "RecordingFeature",
-                "MetronomeFeature"
-            ]),
-        .target(
-            name: "RecordingFeature",
-            dependencies: [
-                "Audio"
+                "MetronomeFeature",
+                "RecordingFeature"
             ]),
         .target(
             name: "MetronomeFeature",
             dependencies: [
                 "Audio"
+            ]),
+        .target(
+            name: "RecordingFeature",
+            dependencies: [
+                "Audio",
+                "Shared"
             ]),
 
         // MARK: Internal modules
@@ -50,9 +51,12 @@ let package = Package(
         .target(
             name: "Preview",
             dependencies: [
-                "RecordingFeature",
-                "MetronomeFeature"
+                "MetronomeFeature",
+                "RecordingFeature"
             ]),
+        .target(
+            name: "Shared",
+            dependencies: []),
 
         // MARK: Tests
 
