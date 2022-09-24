@@ -25,7 +25,13 @@ let package = Package(
         .target(
             name: "AppFeature",
             dependencies: [
+                "LooperFeature",
                 "MetronomeFeature"
+            ]),
+        .target(
+            name: "LooperFeature",
+            dependencies: [
+                "Audio"
             ]),
         .target(
             name: "MetronomeFeature",
@@ -44,6 +50,7 @@ let package = Package(
         .target(
             name: "Preview",
             dependencies: [
+                "LooperFeature",
                 "MetronomeFeature"
             ]),
 
