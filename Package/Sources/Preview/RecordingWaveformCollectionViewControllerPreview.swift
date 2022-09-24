@@ -14,6 +14,11 @@ private extension RecordingWaveformCollectionViewController {
 
         func makeUIViewController(context: Context) -> RecordingWaveformCollectionViewController {
             let vc = RecordingWaveformCollectionViewController()
+            let items = Array(repeating: 0, count: 100)
+                .map { _ in CGFloat.random(in: 2...200) }
+                .enumerated()
+                .map { RecordingWaveformItem.scale(index: $0.offset, height: $0.element) }
+            vc.apply(items: items)
             return vc
         }
 

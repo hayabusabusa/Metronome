@@ -33,13 +33,10 @@ final class RecordingWaveformCollectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureSubviews()
+    }
 
+    func apply(items: [RecordingWaveformItem]) {
         var snapshot = NSDiffableDataSourceSnapshot<RecordingWaveformSection, RecordingWaveformItem>()
-
-        let items = Array(repeating: 0, count: 100)
-            .map { _ in CGFloat.random(in: 2...200) }
-            .enumerated()
-            .map { RecordingWaveformItem.scale(index: $0.offset, height: $0.element) }
         snapshot.appendSections([.scale])
         snapshot.appendItems(items, toSection: .scale)
         dataSource.apply(snapshot)
