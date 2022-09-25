@@ -12,6 +12,18 @@ public final class RecordingViewController: UIViewController {
 
     // MARK: Subviews
 
+    private lazy var waveformCollectionViewController: RecordingWaveformCollectionViewController = {
+        let vc = RecordingWaveformCollectionViewController()
+        vc.view.translatesAutoresizingMaskIntoConstraints = false
+        return vc
+    }()
+
+    private lazy var waveformLayoutView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
     private lazy var controlsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -100,8 +112,10 @@ public final class RecordingViewController: UIViewController {
 private extension RecordingViewController {
     func configureSubviews() {
         view.backgroundColor = .systemBackground
+        view.addSubview(waveformLayoutView)
         view.addSubview(controlsStackView)
 
+        waveformCollectionViewController.embed(in: waveformLayoutView, on: self)
         controlsStackView.addArrangedSubview(timeLabel)
         controlsStackView.addArrangedSubview(buttonsStackView)
         controlsStackView.addArrangedSubview(recordingButton)
@@ -110,6 +124,10 @@ private extension RecordingViewController {
         buttonsStackView.addArrangedSubview(increaseButton)
 
         NSLayoutConstraint.activate([
+            waveformLayoutView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+            waveformLayoutView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            waveformLayoutView.bottomAnchor.constraint(equalTo: controlsStackView.topAnchor, constant: -24),
+            waveformLayoutView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             controlsStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             controlsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
             decreaseButton.heightAnchor.constraint(equalToConstant: decreaseButton.size.height),
