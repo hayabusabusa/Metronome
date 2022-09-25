@@ -14,6 +14,7 @@ final class RecordingWaveformCollectionViewController: UIViewController {
     private lazy var collectionView: UICollectionView = {
         let collectionViewLayout = configureCollectionViewLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+        collectionView.alwaysBounceVertical = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(RecordingWaveformCell.self,
                                 forCellWithReuseIdentifier: String(describing: RecordingWaveformCell.self))
@@ -35,8 +36,11 @@ final class RecordingWaveformCollectionViewController: UIViewController {
         configureSubviews()
     }
 
-    func apply(items: [RecordingWaveformItem]) {
+    func apply(amplitudes: [CGFloat]) {
         var snapshot = NSDiffableDataSourceSnapshot<RecordingWaveformSection, RecordingWaveformItem>()
+
+        let items = amplitudes.enumerated()
+            .map { RecordingWaveformItem.scale(index: $0.offset, height: collectionView.frame.height * $0.element) }
         snapshot.appendSections([.scale])
         snapshot.appendItems(items, toSection: .scale)
         dataSource.apply(snapshot)
