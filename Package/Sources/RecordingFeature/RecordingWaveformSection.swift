@@ -10,17 +10,18 @@ import UIKit
 enum RecordingWaveformSection: Hashable {
     case scale
 
-    var layout: NSCollectionLayoutSection {
+    func layout(with environment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection {
         switch self {
         case .scale:
-            let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(8), heightDimension: .fractionalHeight(1))
+            let horizontalInset = environment.container.contentSize.width / 2.0
+            let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(1), heightDimension: .fractionalHeight(1))
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(8), heightDimension: .fractionalHeight(1))
+            let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(1), heightDimension: .fractionalHeight(1))
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
             let section = NSCollectionLayoutSection(group: group)
             section.orthogonalScrollingBehavior = .continuous
             section.interGroupSpacing = 4.0
-            section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
+            section.contentInsets = .init(top: 0, leading: horizontalInset, bottom: 0, trailing: horizontalInset)
             return section
         }
     }

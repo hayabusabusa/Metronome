@@ -24,6 +24,13 @@ public final class RecordingViewController: UIViewController {
         return view
     }()
 
+    private lazy var waveformLineView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemRed
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
     private lazy var controlsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -105,6 +112,11 @@ public final class RecordingViewController: UIViewController {
         super.viewDidLoad()
         configureSubviews()
     }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        waveformCollectionViewController.apply(amplitudes: Array(repeating: 0, count: 100).map { _ in CGFloat.random(in: 0...1) })
+    }
 }
 
 // MARK: - Configurations
@@ -116,6 +128,8 @@ private extension RecordingViewController {
         view.addSubview(controlsStackView)
 
         waveformCollectionViewController.embed(in: waveformLayoutView, on: self)
+        waveformLayoutView.addSubview(waveformLineView)
+
         controlsStackView.addArrangedSubview(timeLabel)
         controlsStackView.addArrangedSubview(buttonsStackView)
         controlsStackView.addArrangedSubview(recordingButton)
@@ -128,6 +142,10 @@ private extension RecordingViewController {
             waveformLayoutView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             waveformLayoutView.bottomAnchor.constraint(equalTo: controlsStackView.topAnchor, constant: -24),
             waveformLayoutView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            waveformLineView.topAnchor.constraint(equalTo: waveformLayoutView.topAnchor),
+            waveformLineView.bottomAnchor.constraint(equalTo: waveformLayoutView.bottomAnchor),
+            waveformLineView.centerXAnchor.constraint(equalTo: waveformLayoutView.centerXAnchor),
+            waveformLineView.widthAnchor.constraint(equalToConstant: 1.0),
             controlsStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             controlsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
             decreaseButton.heightAnchor.constraint(equalToConstant: decreaseButton.size.height),

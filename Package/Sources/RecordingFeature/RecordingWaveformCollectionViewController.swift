@@ -23,10 +23,11 @@ final class RecordingWaveformCollectionViewController: UIViewController {
 
     // MARK: Properties
 
-    private lazy var dataSource: UICollectionViewDiffableDataSource = {
-        UICollectionViewDiffableDataSource<RecordingWaveformSection, RecordingWaveformItem>(collectionView: collectionView) { collectionView, indexPath, itemIdentifier in
+    private lazy var dataSource: UICollectionViewDiffableDataSource<RecordingWaveformSection, RecordingWaveformItem> = {
+        let dataSource = UICollectionViewDiffableDataSource<RecordingWaveformSection, RecordingWaveformItem>(collectionView: collectionView) { collectionView, indexPath, itemIdentifier in
             return itemIdentifier.cell(collectionView, for: indexPath)
         }
+        return dataSource
     }()
 
     // MARK: Lifecycle
@@ -51,9 +52,9 @@ final class RecordingWaveformCollectionViewController: UIViewController {
 
 private extension RecordingWaveformCollectionViewController {
     func configureCollectionViewLayout() -> UICollectionViewLayout {
-        UICollectionViewCompositionalLayout { [weak self] section, _ in
+        UICollectionViewCompositionalLayout { [weak self] section, environment in
             guard let section = self?.dataSource.snapshot().sectionIdentifiers[section] else { return nil }
-            return section.layout
+            return section.layout(with: environment)
         }
     }
 
